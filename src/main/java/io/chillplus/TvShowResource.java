@@ -34,7 +34,10 @@ public class TvShowResource {
 	@POST
 	public Response create(TvShow show) {
 		Set<ConstraintViolation<TvShow>> violations = validator.validate(show);
-		if (violations.isEmpty()) {
+		if (show.id != null) {
+			return Response.status(400).build();
+		}
+		else if (violations.isEmpty()) {
 			show.id = counter++;
 			shows.add(show);
 			return Response.status(201).entity(show).build();
@@ -56,13 +59,14 @@ public class TvShowResource {
 			}
 		}
 		
-		return Response.status(400).build();
+		return Response.status(404).build();
 	}
 	
 	// Add a deleteAll method in the TvShowResource class to clear the tvShows list.
 	@DELETE
 	public Response deleteAll() {
 		shows.clear();
+		counter = 0L;
 		
 		return Response.status(200).build();
 	}
