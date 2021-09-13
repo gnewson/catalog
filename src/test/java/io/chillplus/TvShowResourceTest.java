@@ -240,8 +240,5 @@ public class TvShowResourceTest {
 		.body("$.size()", is(1));
 
 	}
-
-//Implement a deleteOneTvShow test to verify the Catalog API permits to delete a 
-//tvShow base on its id
 	
 }
