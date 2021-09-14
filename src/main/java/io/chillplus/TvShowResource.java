@@ -9,12 +9,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,7 +30,16 @@ public class TvShowResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<TvShow> getAll() {
-		return TvShow.listAll();
+		return TvShow.findAllOrderByTitle();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/categories/{category}")
+	public List<TvShow> getAllByCategory(@PathParam("category") String category,
+			@DefaultValue("0") @QueryParam("index") int index,
+			@DefaultValue("20") @QueryParam("size") int size) {
+		return TvShow.findByCategoryIgnoreCase(category, index, size);
 	}
 
 	@POST
@@ -74,6 +85,19 @@ public class TvShowResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public TvShow getOneById(@PathParam("id") Long id) {
 		TvShow show = TvShow.findById(id);
+		
+		if (show == null) {
+			throw new WebApplicationException("Show does not exist. ", Response.Status.NOT_FOUND);
+		}
+		
+		return show;
+	}
+	
+	@GET
+	@Path("/search/{title}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public TvShow getOneByTitle(@PathParam("title") String title) {
+		TvShow show = TvShow.findByTitle(title);
 		
 		if (show == null) {
 			throw new WebApplicationException("Show does not exist. ", Response.Status.NOT_FOUND);
