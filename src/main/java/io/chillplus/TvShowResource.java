@@ -7,14 +7,15 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,6 +33,7 @@ public class TvShowResource {
 
 	@POST
 	@Transactional
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(TvShow show) {
 		Set<ConstraintViolation<TvShow>> violations = validator.validate(show);
 		if (show.id != null) {
@@ -47,6 +49,7 @@ public class TvShowResource {
 	
     @PUT
     @Transactional
+	@Consumes(MediaType.APPLICATION_JSON)
     public Response update(TvShow show) {
     	if (show.id == null) {
     		return Response.status(400).build();
@@ -54,7 +57,7 @@ public class TvShowResource {
     	
     	TvShow entity = TvShow.findById(show.id);
         if(entity == null) {
-            throw new NotFoundException();
+        	throw new WebApplicationException("Show does not exist. ", Response.Status.NOT_FOUND);
         }
 
         entity.title = show.title;
@@ -70,7 +73,13 @@ public class TvShowResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public TvShow getOneById(@PathParam("id") Long id) {
-		return TvShow.findById(id);
+		TvShow show = TvShow.findById(id);
+		
+		if (show == null) {
+			throw new WebApplicationException("Show does not exist. ", Response.Status.NOT_FOUND);
+		}
+		
+		return show;
 	}
 	
 	// Add a deleteAll method in the TvShowResource class to clear the tvShows list.

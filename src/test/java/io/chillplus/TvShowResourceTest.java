@@ -97,17 +97,62 @@ public class TvShowResourceTest {
 	}
 
 	@Test
+	void updateTvShow() {
+		
+		TvShow show = new TvShow();
+		show.title = "News";
+		
+		TvShow returnedShow =
+		given()
+		.contentType(ContentType.JSON)
+		.body(show)
+		.when().post("/api/tv")
+		.then()
+		.statusCode(201)
+		.body("title", is(show.title))
+		.extract()
+		.as(TvShow.class);
+			
+		returnedShow.title = "Daily News";
+		
+		given()
+		.when()
+		.contentType(ContentType.JSON)
+		.body(returnedShow)
+		.put("/api/tv")
+		.then()
+		.statusCode(201)
+		.contentType(ContentType.JSON)
+		.body("title", is(returnedShow.title));
+		
+		TvShow newShow = new TvShow();
+		newShow.title = "Nightly News";
+		newShow.category = "News";
+		
+		given()
+		.contentType(ContentType.JSON)
+		.body(newShow)
+		.when().put("/api/tv")
+		.then()
+		.statusCode(400);
+
+	}
+	
+	@Test
 	void getOneTvShow() {
 		TvShow show1 = new TvShow();
 		show1.title = "News";	
 		
+		TvShow returnedShow =
 		given()
 		.contentType(ContentType.JSON)
 		.body(show1)
 		.when().post("/api/tv")
 		.then()
-		.statusCode(201);
-		
+		.statusCode(201)
+		.extract()
+		.as(TvShow.class);
+			
 		given()
 		.when()
 		.get("/api/tv")
@@ -117,7 +162,7 @@ public class TvShowResourceTest {
 		.body("$.size()", is(1));
 		
 		given()
-		.when().get("/api/tv/{id}", "0")
+		.when().get("/api/tv/{id}", returnedShow.id)
 		.then()
 		.statusCode(200)
 		.body("title", is(show1.title));
@@ -144,7 +189,7 @@ public class TvShowResourceTest {
 		.body("$.size()", is(1));
 		
 		given()
-		.when().get("/api/tv/{id}", "1")
+		.when().get("/api/tv/{id}", "5")
 		.then()
 		.statusCode(404);
 	}
@@ -228,7 +273,7 @@ public class TvShowResourceTest {
 
 		given()
 		.when()
-		.delete("/api/tv/{id}",0)
+		.delete("/api/tv/{id}",1)
 		.then()
 		.statusCode(200);
 				
