@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: "2021-09-14T22:26:01Z"
+  name: chillplus-catalog
+  resourceVersion: "11867"
+  uid: 2d73f7b8-35cd-4e27-bf6e-9ba8c58d26d4
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
