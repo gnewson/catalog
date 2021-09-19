@@ -11,9 +11,11 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.panache.common.Sort.Direction;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Entity
 @Table(name = "tv_show")
+@RegisterForReflection
 public class TvShow extends PanacheEntity {
 
 	public static List<TvShow> findAllOrderByTitle() {
